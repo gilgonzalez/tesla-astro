@@ -1,0 +1,82 @@
+---
+import Logo from './Logo.astro';
+---
+<header id="main-header" class="py-3 px-9 flex items-center fixed top-0 w-full justify-between z-40 text-white">
+  <div class="flex flex-grow basis-0">
+   <Logo/>
+  </div>
+  <nav class="flex flex-grow basis-0">
+    <ul class="flex text-sm [&>li>a]:inline-block [&>li>a]:whitespace-nowrap [&>li>a]:transition-colors [&>li>a]:duration-500 [&>li>a]:font-semibold [&>li>a]:px-4 [&>li>a]:py-2">
+        <li><a href="#">Model S</a></li>
+        <li><a href="#">Model 3</a></li>
+        <li><a href="#">Model X</a></li>
+        <li><a href="#">Model Y</a></li>
+        <li><a href="#">Powerwall</a></li>
+        <li><a href="#">Carga</a></li>
+    </ul>
+  </nav>
+  <nav class="flex flex-grow basis-0 justify-end">
+    <ul class="flex text-sm [&>li>a]:inline-block [&>li>a]:transition-colors [&>li>a]:duration-500 [&>li>a]:font-semibold [&>li>a]:px-4 [&>li>a]:py-2">
+      <li><a href="#">Soporte</a></li>
+      <li><a href="#">Cuenta</a></li>
+      <li><a href="#">Tienda</a></li>
+      <li><a href="#">Menu</a></li>
+    </ul>
+  </nav>
+  <div 
+    id="menu-hover"
+    class={`
+      absolute bg-black/20 backdrop-blur-lg rounded 
+      translate-x-[var(--left)] translate-y-[var(--top)] w-[var(--width)] h-[var(--height)]
+      transtion-all duration-500 delay-75 
+      ease-in-out opacity-0 -z-10
+    `}
+  >
+
+  </div>
+</header>
+
+<script>
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.5 
+  }
+  const $header = document.querySelector('#main-header') as HTMLElement
+
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry => {
+      const {isIntersecting} = entry
+      if(isIntersecting) {
+        const color = entry.target.getAttribute('data-header-color')
+        $header.style.color = color ?? 'black'
+      }
+    })
+  }, observerOptions)
+
+  const $sections = document.querySelectorAll('.landing-section') 
+  $sections.forEach((section)=> observer.observe(section))
+</script>
+<script>
+  const listItem = document.querySelectorAll('#main-header li')
+  const menuHover = document.querySelector('#menu-hover') as HTMLElement
+  
+  listItem.forEach((item)=>{
+    item.addEventListener("mouseenter", () => {
+      if(!item) return 
+      const {left, top, width, height, x, y} = item.getBoundingClientRect()
+      const {clientHeight, clientWidth} = item
+      console.log(left, top, width, height)
+      menuHover.style.setProperty("--left", `${x-36}px`)
+      menuHover.style.setProperty("--top", `${y-12}px`)
+      menuHover.style.setProperty("--width", `${width}px`)
+      menuHover.style.setProperty("--height", `${height}px`)
+      menuHover.style.visibility = "visible"
+      menuHover.style.opacity = "1"
+    })
+    item.addEventListener("mouseleave", ()=>{
+      menuHover.style.visibility = "hidden"
+      menuHover.style.opacity = "0"
+    })
+  })
+</script>
